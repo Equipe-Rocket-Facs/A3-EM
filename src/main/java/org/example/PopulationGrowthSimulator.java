@@ -15,6 +15,7 @@ import java.awt.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Simulador de crescimento populacional exponencial com cálculo de derivadas e gráfico.
@@ -33,6 +34,21 @@ public class PopulationGrowthSimulator extends JFrame {
     private JTextArea taLimitAnalysis;
     private JTable resultTable;
     private ResultTableModel tableModel;
+
+    private static final double MIN_GROWTH_RATE = -1.0;
+    private static final double MAX_GROWTH_RATE = 1.0;
+    private static final double MIN_POPULATION = 0.0;
+    private static final double MIN_TIME = 0.0;
+
+    // Add validation messages as constants
+    private static final String ERROR_TITLE = "Erro de Validação";
+    private static final Map<String, String> VALIDATION_MESSAGES = Map.of(
+            "population", "A população inicial (P₀) deve ser maior que zero. Por favor, insira um número positivo válido.",
+            "growthRate", "A taxa de crescimento (r) deve estar entre -1.0 e 1.0. Por favor, insira uma taxa de crescimento realista.",
+            "finalTime", "O tempo final (T) deve ser maior que zero. Por favor, insira um número positivo válido.",
+            "deltaTime", "O intervalo de tempo (Δt) deve ser maior que zero. Por favor, insira um número positivo válido.",
+            "timeInterval", "O intervalo de tempo (Δt) não pode ser maior que o tempo final (T). Por favor, ajuste os valores adequadamente."
+    );
 
     private ChartPanel chartPanel;
 
@@ -59,19 +75,24 @@ public class PopulationGrowthSimulator extends JFrame {
 
         JLabel lblInitialPopulation = new JLabel("População Inicial (P₀):");
         tfInitialPopulation = new JTextField(10);
-        tfInitialPopulation.setToolTipText("Ex.: 1000");
+        tfInitialPopulation.setToolTipText(
+                "Digite a população inicial (P₀). Deve ser um número positivo maior que zero.");
 
         JLabel lblGrowthRate = new JLabel("Taxa de Crescimento (r):");
         tfGrowthRate = new JTextField(10);
-        tfGrowthRate.setToolTipText("Ex.: 0.03 (para crescimento) ou -0.02 (para decaimento)");
+        tfGrowthRate.setToolTipText(
+                "Digite a taxa de crescimento (r) entre -1.0 e 1.0.\n" +
+                        "Exemplo: 0.03 para crescimento de 3% ou -0.02 para decrescimento de 2%");
 
         JLabel lblFinalTime = new JLabel("Tempo Final da Simulação (T):");
         tfFinalTime = new JTextField(10);
-        tfFinalTime.setToolTipText("Ex.: 50");
+        tfFinalTime.setToolTipText(
+                "Digite o tempo final (T) da simulação. Deve ser um número positivo.");
 
         JLabel lblDeltaTime = new JLabel("Intervalo de Tempo (Δt):");
         tfDeltaTime = new JTextField(10);
-        tfDeltaTime.setToolTipText("Ex.: 1");
+        tfDeltaTime.setToolTipText(
+                "Digite o intervalo de tempo (Δt). Deve ser positivo e menor que o tempo final.");
 
         btnSimulate = new JButton("Simular");
         btnReset = new JButton("Resetar");
@@ -140,47 +161,94 @@ public class PopulationGrowthSimulator extends JFrame {
         btnReset.addActionListener(e -> onReset());
     }
 
-    private void onSimulate() {
-        // Validar entradas
-        double P0, r, T, deltaT;
+    private ValidationResult validateInputs() {
         try {
-            P0 = Double.parseDouble(tfInitialPopulation.getText());
-            r = Double.parseDouble(tfGrowthRate.getText());
-            T = Double.parseDouble(tfFinalTime.getText());
-            deltaT = Double.parseDouble(tfDeltaTime.getText());
+            // Parse all inputs first
+            double P0 = parseDoubleInput(tfInitialPopulation.getText(), "população inicial");
+            double r = parseDoubleInput(tfGrowthRate.getText(), "taxa de crescimento");
+            double T = parseDoubleInput(tfFinalTime.getText(), "tempo final");
+            double deltaT = parseDoubleInput(tfDeltaTime.getText(), "intervalo de tempo");
 
-            if (P0 <= 0) {
-                showError("População inicial deve ser maior que zero.");
-                return;
+            // Validate initial population
+            if (P0 <= MIN_POPULATION) {
+                return new ValidationResult(false, VALIDATION_MESSAGES.get("population"));
             }
-            if (deltaT <= 0) {
-                showError("Intervalo de tempo (Δt) deve ser maior que zero.");
-                return;
+
+            // Validate growth rate range
+            if (r < MIN_GROWTH_RATE || r > MAX_GROWTH_RATE) {
+                return new ValidationResult(false, VALIDATION_MESSAGES.get("growthRate"));
             }
-            if (T <= 0) {
-                showError("Tempo final (T) deve ser maior que zero.");
-                return;
+
+            // Validate final time
+            if (T <= MIN_TIME) {
+                return new ValidationResult(false, VALIDATION_MESSAGES.get("finalTime"));
             }
+
+            // Validate time interval
+            if (deltaT <= MIN_TIME) {
+                return new ValidationResult(false, VALIDATION_MESSAGES.get("deltaTime"));
+            }
+
+            // Validate time interval relationship with final time
             if (deltaT > T) {
-                showError("Intervalo de tempo (Δt) não pode ser maior que o tempo final (T).");
-                return;
+                return new ValidationResult(false, VALIDATION_MESSAGES.get("timeInterval"));
             }
-        } catch (NumberFormatException ex) {
-            showError("Por favor, insira valores numéricos válidos.");
+
+            // All validations passed
+            return new ValidationResult(true, null, P0, r, T, deltaT);
+
+        } catch (NumberFormatException e) {
+            return new ValidationResult(false,
+                    "Por favor, insira apenas valores numéricos válidos em todos os campos.\n" +
+                            "Exemplo: Use '.' como separador decimal (ex: 0.03)");
+        }
+    }
+
+    // Helper method to parse double inputs
+    private double parseDoubleInput(String input, String fieldName) throws NumberFormatException {
+        try {
+            return Double.parseDouble(input.trim());
+        } catch (NumberFormatException e) {
+            throw new NumberFormatException(
+                    String.format("O valor inserido para %s não é um número válido.", fieldName));
+        }
+    }
+
+    // Enhanced showError method with better UI feedback
+    private void showError(String message) {
+        JOptionPane.showMessageDialog(this,
+                message,
+                ERROR_TITLE,
+                JOptionPane.ERROR_MESSAGE);
+    }
+
+    private void onSimulate() {
+        ValidationResult validation = validateInputs();
+
+        if (!validation.isValid()) {
+            showError(validation.getMessage());
             return;
         }
 
-        // Calcular dados
-        populationModel.calculatePopulationData(P0, r, T, deltaT);
+        // If validation passed, proceed with simulation
+        populationModel.calculatePopulationData(
+                validation.getP0(),
+                validation.getR(),
+                validation.getT(),
+                validation.getDeltaT()
+        );
 
-        // Atualizar tabela
-        tableModel.setData(populationModel.getTimePoints(), populationModel.getPopulationValues(), populationModel.getGrowthRates());
+        // Update UI components
+        updateUIWithResults();
+    }
 
-        // Atualizar análise do limite
-        String limitMessage = populationModel.analyzeLimit();
-        taLimitAnalysis.setText(limitMessage);
-
-        // Atualizar gráfico
+    private void updateUIWithResults() {
+        tableModel.setData(
+                populationModel.getTimePoints(),
+                populationModel.getPopulationValues(),
+                populationModel.getGrowthRates()
+        );
+        taLimitAnalysis.setText(populationModel.analyzeLimit());
         updateChart();
     }
 
@@ -194,9 +262,6 @@ public class PopulationGrowthSimulator extends JFrame {
         chartPanel.setChart(null);
     }
 
-    private void showError(String message) {
-        JOptionPane.showMessageDialog(this, message, "Erro de entrada", JOptionPane.ERROR_MESSAGE);
-    }
 
     private void updateChart() {
         XYSeries populationSeries = new XYSeries("População P(t)");
@@ -373,4 +438,6 @@ public class PopulationGrowthSimulator extends JFrame {
         });
     }
 }
+
+
 
