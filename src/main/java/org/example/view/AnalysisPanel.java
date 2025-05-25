@@ -9,9 +9,11 @@ public class AnalysisPanel extends JPanel {
     public AnalysisPanel() {
         setLayout(new BorderLayout());
         setBorder(BorderFactory.createTitledBorder("Análise do Limite Assintótico"));
+        setBackground(UIManager.getColor("Panel.background"));
         taAnalysis.setEditable(false);
         taAnalysis.setLineWrap(true);
         taAnalysis.setWrapStyleWord(true);
+        taAnalysis.setBackground(UIManager.getColor("Panel.background"));
         add(new JScrollPane(taAnalysis), BorderLayout.CENTER);
     }
 

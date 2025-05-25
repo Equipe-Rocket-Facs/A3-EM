@@ -2,11 +2,7 @@ package org.example.view;
 
 import javax.swing.*;
 import java.awt.*;
-import java.util.function.Consumer;
 
-/**
- * Painel de entrada de dados.
- */
 public class InputPanel extends JPanel {
     private final JTextField tfInitialPopulation = new JTextField(10);
     private final JTextField tfGrowthRate = new JTextField(10);
@@ -32,27 +28,12 @@ public class InputPanel extends JPanel {
 
         gbc.gridx = 0; gbc.gridy = y; add(btnSimulate, gbc);
         gbc.gridx = 1; add(btnReset, gbc);
-        gbc.gridx = 2; gbc.gridy = y; add(btnHelp, gbc);
+        gbc.gridx = 2; add(btnHelp, gbc);
 
         // Estilização dos botões
-        btnSimulate.setBackground(new Color(33, 150, 243)); // Azul
-        btnSimulate.setForeground(Color.BLACK);
-        btnSimulate.setFocusPainted(false);
-        btnSimulate.setBorderPainted(false);
-        btnSimulate.setOpaque(true);
-
-        btnReset.setBackground(new Color(255, 87, 34)); // Vermelho
-        btnReset.setForeground(Color.BLACK);
-        btnReset.setFocusPainted(false);
-        btnReset.setBorderPainted(false);
-        btnReset.setOpaque(true);
-
-        // Botão de ajuda amarelo
-        btnHelp.setBackground(new Color(255, 235, 59)); // Amarelo
-        btnHelp.setForeground(Color.BLACK);
-        btnHelp.setFocusPainted(false);
-        btnHelp.setBorderPainted(false);
-        btnHelp.setOpaque(true);
+        styleButton(btnSimulate, new Color(33, 150, 243)); // Azul
+        styleButton(btnReset, new Color(255, 87, 34)); // Vermelho
+        styleButton(btnHelp, new Color(255, 235, 59)); // Amarelo
 
         // Adicionando placeholders
         tfInitialPopulation.setToolTipText("Digite a população inicial (>0)");
@@ -64,6 +45,16 @@ public class InputPanel extends JPanel {
     private void addRow(GridBagConstraints gbc, int y, String label, JTextField field, String tooltip) {
         gbc.gridx = 0; gbc.gridy = y; add(new JLabel(label), gbc);
         gbc.gridx = 1; field.setToolTipText(tooltip); add(field, gbc);
+    }
+
+    private void styleButton(JButton button, Color color) {
+        button.setBackground(color);
+        button.setForeground(Color.BLACK);
+        button.setFocusPainted(false);
+        button.setBorderPainted(false);
+        button.setOpaque(true);
+        button.setFont(new Font("Segoe UI", Font.BOLD, 12));
+        button.setPreferredSize(new Dimension(100, 30)); // Tamanho fixo para os botões
     }
 
     public void setSimulateAction(Runnable action) { btnSimulate.addActionListener(e -> action.run()); }

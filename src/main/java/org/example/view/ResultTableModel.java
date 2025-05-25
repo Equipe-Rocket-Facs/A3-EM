@@ -1,9 +1,6 @@
-// ResultTableModel.java
 package org.example.view;
 
-import javax.swing.*;
 import javax.swing.table.AbstractTableModel;
-import java.awt.*;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;

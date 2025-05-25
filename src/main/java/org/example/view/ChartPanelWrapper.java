@@ -3,7 +3,6 @@ package org.example.view;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
-import org.jfree.chart.block.BlockBorder;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
@@ -11,6 +10,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.chart.axis.ValueAxis;
 
 import javax.swing.*;
+import javax.swing.border.*;
 import java.awt.*;
 import java.util.List;
 
@@ -19,8 +19,24 @@ public class ChartPanelWrapper extends JPanel {
 
     public ChartPanelWrapper() {
         setLayout(new BorderLayout());
-        setBorder(BorderFactory.createTitledBorder("Gráfico de Crescimento Populacional e Taxa"));
+
+        // Fonte do FlatLaf
+        Font titleFont = UIManager.getFont("Label.font").deriveFont(Font.BOLD, 14f);
+
+        // Bordas modernas com FlatLaf
+        TitledBorder titledBorder = BorderFactory.createTitledBorder(
+                new LineBorder(new Color(200, 200, 200), 1, true),
+                "Gráfico de Crescimento Populacional e Taxa"
+        );
+        titledBorder.setTitleFont(titleFont);
+        titledBorder.setTitleColor(UIManager.getColor("Label.foreground"));
+        setBorder(BorderFactory.createCompoundBorder(
+                new EmptyBorder(10, 10, 10, 10),
+                titledBorder
+        ));
+
         chartPanel.setPreferredSize(new Dimension(550, 650));
+        chartPanel.setBackground(UIManager.getColor("Panel.background"));
         add(chartPanel, BorderLayout.CENTER);
     }
 
@@ -31,54 +47,56 @@ public class ChartPanelWrapper extends JPanel {
             popSeries.add(times.get(i), populations.get(i));
             growthSeries.add(times.get(i), growths.get(i));
         }
+
         XYSeriesCollection dataset = new XYSeriesCollection();
         dataset.addSeries(popSeries);
         dataset.addSeries(growthSeries);
 
         JFreeChart chart = ChartFactory.createXYLineChart(
                 "Crescimento Populacional e Taxa de Crescimento",
-                "Tempo (t)", "Valor", dataset);
+                "Tempo (t)",
+                "Valor",
+                dataset
+        );
 
-        // Estilizando o gráfico
         XYPlot plot = chart.getXYPlot();
-        plot.setBackgroundPaint(new Color(240, 240, 240)); // Fundo claro
-        plot.setDomainGridlinePaint(new Color(200, 200, 200)); // Gridlines suaves
-        plot.setRangeGridlinePaint(new Color(200, 200, 200)); // Gridlines suaves
+        plot.setBackgroundPaint(UIManager.getColor("Panel.background")); // cor do painel FlatLaf
+        plot.setDomainGridlinePaint(new Color(180, 180, 180));
+        plot.setRangeGridlinePaint(new Color(180, 180, 180));
 
-        // Eixos
+        // Eixos com FlatLaf
         ValueAxis domainAxis = plot.getDomainAxis();
-        domainAxis.setLabelFont(new Font("Segoe UI", Font.BOLD, 14));
-        domainAxis.setTickLabelFont(new Font("Segoe UI", Font.PLAIN, 12));
-        domainAxis.setLabelPaint(Color.DARK_GRAY);
-        domainAxis.setTickLabelPaint(Color.DARK_GRAY);
-
         ValueAxis rangeAxis = plot.getRangeAxis();
-        rangeAxis.setLabelFont(new Font("Segoe UI", Font.BOLD, 14));
-        rangeAxis.setTickLabelFont(new Font("Segoe UI", Font.PLAIN, 12));
-        rangeAxis.setLabelPaint(Color.DARK_GRAY);
-        rangeAxis.setTickLabelPaint(Color.DARK_GRAY);
+        Font axisFont = UIManager.getFont("Label.font");
 
-        // Renderer
+        domainAxis.setLabelFont(axisFont.deriveFont(Font.BOLD));
+        domainAxis.setTickLabelFont(axisFont);
+        domainAxis.setLabelPaint(UIManager.getColor("Label.foreground"));
+        domainAxis.setTickLabelPaint(UIManager.getColor("Label.foreground"));
+
+        rangeAxis.setLabelFont(axisFont.deriveFont(Font.BOLD));
+        rangeAxis.setTickLabelFont(axisFont);
+        rangeAxis.setLabelPaint(UIManager.getColor("Label.foreground"));
+        rangeAxis.setTickLabelPaint(UIManager.getColor("Label.foreground"));
+
+        // Renderer com estilo moderno
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer();
-        renderer.setSeriesPaint(0, new Color(0, 204, 255)); // Azul-claro
-        renderer.setSeriesStroke(0, new BasicStroke(2.0f)); // Linha sólida
+        renderer.setSeriesPaint(0, Color.BLUE);
+        renderer.setSeriesStroke(0, new BasicStroke(2.0f));
         renderer.setSeriesShapesVisible(0, true);
-        renderer.setSeriesShapesFilled(0, true);
-        renderer.setSeriesShape(0, new java.awt.geom.Ellipse2D.Double(-2, -2, 4, 4)); // Marcadores menores
+        renderer.setSeriesShape(0, new java.awt.geom.Ellipse2D.Double(-2, -2, 4, 4));
 
-        renderer.setSeriesPaint(1, new Color(255, 102, 0)); // Vermelho-alaranjado
-        renderer.setSeriesStroke(1, new BasicStroke(2.0f, BasicStroke.CAP_BUTT, BasicStroke.JOIN_BEVEL, 0, new float[]{6.0f, 6.0f}, 0)); // Linha tracejada
-        renderer.setSeriesShapesVisible(1, false); // Sem pontos para a taxa de crescimento
+        renderer.setSeriesPaint(1, Color.RED);
+        renderer.setSeriesStroke(1, new BasicStroke(2.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_BEVEL, 0, new float[]{6.0f, 6.0f}, 0));
+        renderer.setSeriesShapesVisible(1, false);
 
         plot.setRenderer(renderer);
 
-        // Melhorar a legenda
-        chart.getLegend().setFrame(BlockBorder.NONE);
-        chart.getLegend().setBackgroundPaint(new Color(255, 255, 255, 200)); // Fundo semi-transparente
-        chart.getLegend().setItemFont(new Font("Segoe UI", Font.PLAIN, 12));
-        chart.getLegend().setPosition(org.jfree.chart.ui.RectangleEdge.RIGHT); // Posição da legenda à direita
+        // Estilo da legenda
+        chart.getLegend().setItemFont(axisFont);
+        chart.getLegend().setBackgroundPaint(new Color(255, 255, 255, 180));
+        chart.getLegend().setBorder(0, 0, 0, 0);
 
-        // Definindo o gráfico no painel
         chartPanel.setChart(chart);
     }
 
