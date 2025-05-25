@@ -1,10 +1,12 @@
 package org.example.controller;
 
 import org.example.model.PopulationModel;
+import org.example.model.StatisticsUtil;
 import org.example.model.ValidationResult;
 import org.example.view.*;
 
 import javax.swing.*;
+import java.util.List;
 import java.util.Map;
 
 public class PopulationController {
@@ -13,6 +15,7 @@ public class PopulationController {
     private final ResultTablePanel tablePanel;
     private final AnalysisPanel analysisPanel;
     private final ChartPanelWrapper chartPanel;
+    private final StatisticsPanel statisticsPanel;
 
     private static final double MIN_GROWTH_RATE = -1.0, MAX_GROWTH_RATE = 1.0, MIN_POPULATION = 0.0, MIN_TIME = 0.0;
     private static final Map<String, String> VALIDATION_MESSAGES = Map.of(
@@ -24,12 +27,13 @@ public class PopulationController {
     );
 
     public PopulationController(PopulationModel model, InputPanel inputPanel, ResultTablePanel tablePanel,
-                                AnalysisPanel analysisPanel, ChartPanelWrapper chartPanel) {
+                                AnalysisPanel analysisPanel, ChartPanelWrapper chartPanel, StatisticsPanel statisticsPanel) {
         this.model = model;
         this.inputPanel = inputPanel;
         this.tablePanel = tablePanel;
         this.analysisPanel = analysisPanel;
         this.chartPanel = chartPanel;
+        this.statisticsPanel = statisticsPanel;
 
         inputPanel.setSimulateAction(this::onSimulate);
         inputPanel.setResetAction(this::onReset);
@@ -47,6 +51,8 @@ public class PopulationController {
         tablePanel.getModel().setData(model.getTimePoints(), model.getPopulationValues(), model.getGrowthRates());
         analysisPanel.setAnalysisText(model.analyzeLimit());
         chartPanel.updateChart(model.getTimePoints(), model.getPopulationValues(), model.getGrowthRates());
+
+        updateStatistics(model.getPopulationValues());
     }
 
     private ValidationResult validateInputs() {
@@ -85,6 +91,13 @@ public class PopulationController {
 
     private void onHelp() {
         inputPanel.showHelpDialog();
+    }
+
+    private void updateStatistics(List<Double> populationValues) {
+        double mean = StatisticsUtil.mean(populationValues);
+        double median = StatisticsUtil.median(populationValues);
+        double stddev = StatisticsUtil.stddev(populationValues);
+        statisticsPanel.setStatistics(mean, median, stddev);
     }
 
     private void showError(String msg) {
