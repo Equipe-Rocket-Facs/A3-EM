@@ -33,6 +33,7 @@ public class PopulationController {
 
         inputPanel.setSimulateAction(this::onSimulate);
         inputPanel.setResetAction(this::onReset);
+        inputPanel.setHelpAction(this::onHelp);
     }
 
     private void onSimulate() {
@@ -42,7 +43,6 @@ public class PopulationController {
             return;
         }
 
-        // Se a validação passou, prosseguir com a simulação
         model.calculatePopulationData(validation.getP0(), validation.getR(), validation.getT(), validation.getDeltaT());
         tablePanel.getModel().setData(model.getTimePoints(), model.getPopulationValues(), model.getGrowthRates());
         analysisPanel.setAnalysisText(model.analyzeLimit());
@@ -81,6 +81,10 @@ public class PopulationController {
         tablePanel.getModel().clearData();
         analysisPanel.clear();
         chartPanel.clearChart();
+    }
+
+    private void onHelp() {
+        inputPanel.showHelpDialog();
     }
 
     private void showError(String msg) {

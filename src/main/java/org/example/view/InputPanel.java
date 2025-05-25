@@ -14,6 +14,7 @@ public class InputPanel extends JPanel {
     private final JTextField tfDeltaTime = new JTextField(10);
     private final JButton btnSimulate = new JButton("Simular");
     private final JButton btnReset = new JButton("Resetar");
+    private final JButton btnHelp = new JButton("Ajuda");
 
     public InputPanel() {
         setLayout(new GridBagLayout());
@@ -30,6 +31,7 @@ public class InputPanel extends JPanel {
 
         gbc.gridx = 0; gbc.gridy = y; add(btnSimulate, gbc);
         gbc.gridx = 1; add(btnReset, gbc);
+        gbc.gridx = 2; gbc.gridy = y; add(btnHelp, gbc);
     }
 
     private void addRow(GridBagConstraints gbc, int y, String label, JTextField field, String tooltip) {
@@ -39,6 +41,35 @@ public class InputPanel extends JPanel {
 
     public void setSimulateAction(Runnable action) { btnSimulate.addActionListener(e -> action.run()); }
     public void setResetAction(Runnable action) { btnReset.addActionListener(e -> action.run()); }
+    public void setHelpAction(Runnable action) { btnHelp.addActionListener(e -> action.run());}
+
+    public void showHelpDialog() {
+        JOptionPane.showMessageDialog(
+                this, // ou outro componente pai, se preferir
+                """
+                🛈 Instruções de uso do Simulador de Crescimento Populacional
+                
+                ① Preencha TODOS os campos:
+                - População Inicial (P₀): número positivo (ex: 1000).
+                - Taxa de Crescimento (r): entre -1.0 e 1.0 (ex: 0.03 para 3% ao ano).
+                - Tempo Final (T): número positivo (> 0).
+                - Intervalo de Tempo (Δt): número positivo menor que T.
+        
+                ② Clique em 'Simular' para ver o gráfico, tabela e análise.
+        
+                ③ Clique em 'Resetar' para limpar tudo.
+        
+                Interpretação:
+                - Linha azul: população ao longo do tempo.
+                - Linha vermelha: taxa de crescimento instantânea.
+                - A análise mostra o que acontece com a população no longo prazo.
+        
+                Dica: valores negativos de r simulam decaimento populacional.
+                """,
+                "Ajuda e Instruções",
+                JOptionPane.INFORMATION_MESSAGE
+        );
+    }
 
     public String getInitialPopulation() { return tfInitialPopulation.getText(); }
     public String getGrowthRate() { return tfGrowthRate.getText(); }
