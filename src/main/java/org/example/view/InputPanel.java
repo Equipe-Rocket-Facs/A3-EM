@@ -19,8 +19,9 @@ public class InputPanel extends JPanel {
     public InputPanel() {
         setLayout(new GridBagLayout());
         setBorder(BorderFactory.createTitledBorder("Parâmetros de Entrada"));
+        setFont(new Font("Segoe UI", Font.PLAIN, 12)); // Fonte atualizada
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.insets = new Insets(5,5,5,5);
+        gbc.insets = new Insets(10, 10, 10, 10);
         gbc.anchor = GridBagConstraints.WEST;
 
         int y = 0;
@@ -32,6 +33,32 @@ public class InputPanel extends JPanel {
         gbc.gridx = 0; gbc.gridy = y; add(btnSimulate, gbc);
         gbc.gridx = 1; add(btnReset, gbc);
         gbc.gridx = 2; gbc.gridy = y; add(btnHelp, gbc);
+
+        // Estilização dos botões
+        btnSimulate.setBackground(new Color(33, 150, 243)); // Azul
+        btnSimulate.setForeground(Color.BLACK);
+        btnSimulate.setFocusPainted(false);
+        btnSimulate.setBorderPainted(false);
+        btnSimulate.setOpaque(true);
+
+        btnReset.setBackground(new Color(255, 87, 34)); // Vermelho
+        btnReset.setForeground(Color.BLACK);
+        btnReset.setFocusPainted(false);
+        btnReset.setBorderPainted(false);
+        btnReset.setOpaque(true);
+
+        // Botão de ajuda amarelo
+        btnHelp.setBackground(new Color(255, 235, 59)); // Amarelo
+        btnHelp.setForeground(Color.BLACK);
+        btnHelp.setFocusPainted(false);
+        btnHelp.setBorderPainted(false);
+        btnHelp.setOpaque(true);
+
+        // Adicionando placeholders
+        tfInitialPopulation.setToolTipText("Digite a população inicial (>0)");
+        tfGrowthRate.setToolTipText("Entre -1.0 e 1.0 (ex: 0.03)");
+        tfFinalTime.setToolTipText("Tempo final (>0)");
+        tfDeltaTime.setToolTipText("Intervalo (>0 e <T)");
     }
 
     private void addRow(GridBagConstraints gbc, int y, String label, JTextField field, String tooltip) {
@@ -41,31 +68,31 @@ public class InputPanel extends JPanel {
 
     public void setSimulateAction(Runnable action) { btnSimulate.addActionListener(e -> action.run()); }
     public void setResetAction(Runnable action) { btnReset.addActionListener(e -> action.run()); }
-    public void setHelpAction(Runnable action) { btnHelp.addActionListener(e -> action.run());}
+    public void setHelpAction(Runnable action) { btnHelp.addActionListener(e -> action.run()); }
 
     public void showHelpDialog() {
         JOptionPane.showMessageDialog(
-                this, // ou outro componente pai, se preferir
+                this,
                 """
-                🛈 Instruções de uso do Simulador de Crescimento Populacional
-                
-                ① Preencha TODOS os campos:
-                - População Inicial (P₀): número positivo (ex: 1000).
-                - Taxa de Crescimento (r): entre -1.0 e 1.0 (ex: 0.03 para 3% ao ano).
-                - Tempo Final (T): número positivo (> 0).
-                - Intervalo de Tempo (Δt): número positivo menor que T.
-        
-                ② Clique em 'Simular' para ver o gráfico, tabela e análise.
-        
-                ③ Clique em 'Resetar' para limpar tudo.
-        
-                Interpretação:
-                - Linha azul: população ao longo do tempo.
-                - Linha vermelha: taxa de crescimento instantânea.
-                - A análise mostra o que acontece com a população no longo prazo.
-        
-                Dica: valores negativos de r simulam decaimento populacional.
-                """,
+               🛈 Instruções de uso do Simulador de Crescimento Populacional
+               
+               ① Preencha TODOS os campos:
+               - População Inicial (P₀): número positivo (ex: 1000).
+               - Taxa de Crescimento (r): entre -1.0 e 1.0 (ex: 0.03 para 3% ao ano).
+               - Tempo Final (T): número positivo (> 0).
+               - Intervalo de Tempo (Δt): número positivo menor que T.
+       
+               ② Clique em 'Simular' para ver o gráfico, tabela e análise.
+       
+               ③ Clique em 'Resetar' para limpar tudo.
+       
+               Interpretação:
+               - Linha azul: população ao longo do tempo.
+               - Linha vermelha: taxa de crescimento instantânea.
+               - A análise mostra o que acontece com a população no longo prazo.
+       
+               Dica: valores negativos de r simulam decaimento populacional.
+               """,
                 "Ajuda e Instruções",
                 JOptionPane.INFORMATION_MESSAGE
         );

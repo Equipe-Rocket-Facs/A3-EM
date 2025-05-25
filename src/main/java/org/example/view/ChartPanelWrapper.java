@@ -8,7 +8,6 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 
 import javax.swing.*;
@@ -48,14 +47,14 @@ public class ChartPanelWrapper extends JPanel {
 
         // Eixos
         ValueAxis domainAxis = plot.getDomainAxis();
-        domainAxis.setLabelFont(new Font("Arial", Font.BOLD, 14));
-        domainAxis.setTickLabelFont(new Font("Arial", Font.PLAIN, 12));
+        domainAxis.setLabelFont(new Font("Segoe UI", Font.BOLD, 14));
+        domainAxis.setTickLabelFont(new Font("Segoe UI", Font.PLAIN, 12));
         domainAxis.setLabelPaint(Color.DARK_GRAY);
         domainAxis.setTickLabelPaint(Color.DARK_GRAY);
 
         ValueAxis rangeAxis = plot.getRangeAxis();
-        rangeAxis.setLabelFont(new Font("Arial", Font.BOLD, 14));
-        rangeAxis.setTickLabelFont(new Font("Arial", Font.PLAIN, 12));
+        rangeAxis.setLabelFont(new Font("Segoe UI", Font.BOLD, 14));
+        rangeAxis.setTickLabelFont(new Font("Segoe UI", Font.PLAIN, 12));
         rangeAxis.setLabelPaint(Color.DARK_GRAY);
         rangeAxis.setTickLabelPaint(Color.DARK_GRAY);
 
@@ -76,7 +75,7 @@ public class ChartPanelWrapper extends JPanel {
         // Melhorar a legenda
         chart.getLegend().setFrame(BlockBorder.NONE);
         chart.getLegend().setBackgroundPaint(new Color(255, 255, 255, 200)); // Fundo semi-transparente
-        chart.getLegend().setItemFont(new Font("Arial", Font.PLAIN, 12));
+        chart.getLegend().setItemFont(new Font("Segoe UI", Font.PLAIN, 12));
         chart.getLegend().setPosition(org.jfree.chart.ui.RectangleEdge.RIGHT); // Posição da legenda à direita
 
         // Definindo o gráfico no painel
