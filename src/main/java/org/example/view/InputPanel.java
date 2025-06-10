@@ -79,7 +79,7 @@ public class InputPanel extends JPanel {
        
                Interpretação:
                - Linha azul: população ao longo do tempo.
-               - Linha vermelha: taxa de crescimento instantânea.
+               - Linha preta: taxa de crescimento instantânea.
                - A análise mostra o que acontece com a população no longo prazo.
        
                Dica: valores negativos de r simulam decaimento populacional.
